@@ -1,68 +1,166 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-    typedef struct {
-
-    int id;
-    char nome[50];
-    int v, e, gm, gs;
-
-    } Time;
-
-Time* create_Time(const int id, const char *nome){
-    //alocação dinâmica 
-    Time *new_Time =(Time*)malloc(sizeof(Time));
-    if (new_Time == NULL){
-        printf ("Erro na alocação de memória do Time.\n");
-        exit(1);
-    }
-    strcpy(new_Time->nome, nome);
-    new_Time->id = id;
-    new_Time->v = 0;
-    new_Time->e = 0;
-    new_Time->gm = 0;
-    new_Time->gs = 0;
-
-    return new_Time;
-}
+#include "TAD_BDTimes.h"
+#include "TAD_BDPartidas.h"
+#include "TAD_Time.h"
+#include "TAD_Partida.h"
 
 int main(){
+
     
-    FILE *arquivo_time = fopen("times.csv","r");
-    if (arquivo_time == NULL) {
-        printf("Arquivo Inválido.");
-        return 0;    
-    }     
+    BDTimes *bd_time = (BDTimes*)malloc(sizeof(BDTimes));
+    if (bd_time == NULL) {
+        return 1;
+    }
+    bd_time->qtd_times = 0;
+    
+    if(readteams(bd_time) == 0){
+        printf("Erro ao carregar o arquivo times.csv \n");
+        free(bd_time);
+        return 1;
+    }
 
-    Time *lista_times[11];
-    char linha[256];
-    int cont = 0;
+   BDPartidas *bd_partida = criar_BDPartidas(100);
+    if (bd_partida == NULL){
+        printf("Erro: Faltou memoria para criar o banco de partidas.\n");
+        // Limpa os times da memoria antes de fechar por erro
+        for (int i = 0; i < bd_time->qtd_times; i++) {
+            free(bd_time->lista_times[i]);
+        }
+        free(bd_time);
+        return 1;
+    }
 
-    fgets(linha, sizeof(linha), arquivo_time); //lê o arquivo uma vez para ignorar primeira linha que contém (ID,Time)
+    // 4. Carrega as partidas do arquivo CSV
+    carregar_partidas_csv(bd_partida, "partidas.csv");
 
-    while (cont < 10 && fgets(linha, sizeof(linha), arquivo_time) != NULL) {
-        linha[strcspn(linha, "\n")] = '\0'; //Troca \n por \0 para encerrar a linha sem o pulo de linha em cada time.
-
-        char *id_texto = strtok(linha, ",");
-        char *nome_texto = strtok(NULL, ",");
-        
-        if (id_texto != NULL && nome_texto != NULL) {
+    processar_campeonato(BDTimes *bd_time, BDPartidas *bd_partida);
+    
+    char option = ' '; 
+    while (option != 'q' && option != 'Q'){
+        printf("1 - Consultar time \n");
+        printf("2 - Consultar partidas \n");
+        printf("6 - Imprimir tabela de classificação \n");
+        printf("Q - sair \n");
+        scanf("%c", &option);
+    
+    if (option == "1"){
+        char busca[50];
+            printf("Digite o nome ou prefixo do time: ");
+            scanf("%s", busca);
             
-            int id_int = atoi(id_texto);
-            lista_times[cont] = create_Time((id_int), nome_texto);
-            cont++;
+            printf("\nID  Time           V  E  D  GM  GS  S   PG\n");
+            
+            for (int i = 0; i < bd_time->qtd_times; i++) {
+                Time *time_atual = bd_time->lista_times[i];
+                
+                // strncmp compara as letras da busca com o inicio do nome do time
+                if (strncmp(time_atual->nome, busca, strlen(busca)) == 0) {
+                    
+                    int saldo = get_SG(time_atual);
+                    int pontos = get_PG(time_atual);
+                    
+                    printf("%-3d %-14s %-2d %-2d %-2d %-3d %-3d %-3d %-3d\n", 
+                           time_atual->id, time_atual->nome, time_atual->v, 
+                           time_atual->e, time_atual->d, time_atual->gm, 
+                           time_atual->gs, saldo, pontos);
+                }
+            }
+    }
+
+
+else if (option == '2') {
+            char modo = ' ';
+            printf("\nEscolha o modo de consulta:\n");
+            printf("1 - Por time mandante\n");
+            printf("2 - Por time visitante\n");
+            printf("3 - Por time mandante ou visitante\n");
+            printf("4 - Retornar ao menu princpal\n");
+            scanf(" %c", &modo);
+
+            if (modo == '1' || modo == '2' || modo == '3') {
+                char busca[50];
+                printf("Digite o nome: ");
+                scanf("%s", busca);
+
+                printf("\nID  Timel                  Time2\n");
+
+                // Percorre todas as partidas
+                for (int i = 0; i < bd_partida->qtd_partidas; i++) {
+                    Partida *partida_atual = bd_partida->partidas[i];
+
+                    char nome_time1[50] = "";
+                    char nome_time2[50] = "";
+
+                    // Busca os nomes dos times comparando os IDs
+                    for (int t = 0; t < bd_time->qtd_times; t++) {
+                        if (bd_time->lista_times[t]->id == partida_atual->id_time1) {
+                            strcpy(nome_time1, bd_time->lista_times[t]->nome);
+                        }
+                        if (bd_time->lista_times[t]->id == partida_atual->id_time2) {
+                            strcpy(nome_time2, bd_time->lista_times[t]->nome);
+                        }
+                    }
+
+                    int deve_imprimir = 0;
+
+                    // Verifica se bate com a busca dependendo do modo escolhido
+                    if (modo == '1') {
+                        if (strncmp(nome_time1, busca, strlen(busca)) == 0) {
+                            deve_imprimir = 1;
+                        }
+                    } else if (modo == '2') {
+                        if (strncmp(nome_time2, busca, strlen(busca)) == 0) {
+                            deve_imprimir = 1;
+                        }
+                    } else if (modo == '3') {
+                        if (strncmp(nome_time1, busca, strlen(busca)) == 0 || 
+                            strncmp(nome_time2, busca, strlen(busca)) == 0) {
+                            deve_imprimir = 1;
+                        }
+                    }
+
+                    if (deve_imprimir == 1) {
+                        printf("%-3d %-10s %d x %d  %-10s\n", 
+                               partida_atual->id, 
+                               nome_time1, 
+                               partida_atual->gols_time1, 
+                               partida_atual->gols_time2, 
+                               nome_time2);
+                    }
+                }
+            }
+        }
+        else if (option == '6') {
+            printf("\n--- TABELA DE CLASSIFICACAO ---\n");
+            printf("ID  Time           V  E  D  GM  GS  S   PG\n");
+            
+            for (int i = 0; i < bd_time->qtd_times; i++) {
+                Time *time_atual = bd_time->lista_timed_time
+                int saldo = get_SG(time_atual);
+                int pontos = get_PG(time_atual);
+                
+                printf("%-3d %-14s %-2d %-2d %-2d %-3d %-3d %-3d %-3d\n", 
+                       time_atual->id, time_atual->nome, time_atual->v, 
+                       time_atual->e, time_atual->d, time_atual->gm, 
+                       time_atual->gs, saldo, pontos);
+            }
+        } 
+        else if (option == 'Q' || option == 'q') {
+            printf("Saindo do sistema...\n");
+        } 
+        else {
+            printf("Opção invalida!\n");
         }
     }
-    fclose(arquivo_time);
-    for (int j =0; j <cont; j++){
-        printf("ID: %d | Nome: %s \n", lista_times[j]->id, lista_times[j]->nome);
 
+    // 5. Limpeza total da memoria antes do programa fechar
+    for (int i = 0; i < bd_time->qtd_times; i++) {
+        free(bd_time->lista_timd_time
+    free(bd_time);
 
-    }
-    //desaloca os itens da lista de números da memória
-    for (int i = 0; i < cont; i++) {
-        free(lista_times[i]);
-    }
+    destruir_BDPartidas(bd_partida);
+
     return 0;
 }
