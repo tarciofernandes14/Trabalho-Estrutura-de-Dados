@@ -12,7 +12,6 @@ int readteams(BDTimes *bd){
         return 0;    
     }     
 
-    Time *lista_times[11];
     char linha[256];
     int cont = 0;
 
@@ -38,7 +37,6 @@ int readteams(BDTimes *bd){
 }
 Time* buscar_time_por_id(BDTimes *bd, int id_procurado) {
     for (int i = 0; i < bd->qtd_times; i++) {
-        // Supondo que seu TAD Time tenha uma função 'get_id_Time'
         if ((bd->lista_times[i]->id) == id_procurado) {
             return bd->lista_times[i]; 
         }
@@ -47,8 +45,8 @@ Time* buscar_time_por_id(BDTimes *bd, int id_procurado) {
 }
 void registrar_resultado_Time(Time *t, int gols_pro, int gols_contra) {
     if (t == NULL) return;
-    t->gm += gols_pro;    // Gols Marcados 
-    t->gs += gols_contra; // Gols Sofridos 
+    t->gm += gols_pro;    
+    t->gs += gols_contra; 
     if (gols_pro > gols_contra) {
         t->v++; 
     } else if (gols_pro < gols_contra) {
@@ -67,4 +65,13 @@ void processar_campeonato(BDTimes *bdt, BDPartidas *bdp) {
             registrar_resultado_Time(t2, p->gols_time2, p->gols_time1);
         }
     }
+}
+
+void destruir_times(BDTimes *bdt) {
+    if (bdt == NULL) return; 
+
+    for (int i = 0; i < bdt->qtd_times; i++) {
+        free(bdt->lista_times[i]); 
+    }
+    free(bdt); 
 }

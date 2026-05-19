@@ -17,4 +17,6 @@ void registrar_resultado_Time(Time *t, int gols_pro, int gols_contra);
 
 void processar_campeonato(BDTimes *bdt, BDPartidas *bdp);
 
+void destruir_times(BDTimes *bdt);
+
 #endif
