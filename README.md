@@ -6,20 +6,20 @@
 
 **Alunos:**
 - Gustavo da Paz Rauta Ramos
-- Tarcio Fernandes Rodrigues
+- Tárcio Fernandes Rodrigues
 
 ---
 
 ## Descrição
 
-Sistema em linguagem C para gerenciamento de um campeonato computacional de futebol com 10 times. Os dados são persistidos em arquivos CSV e carregados em memória ao iniciar o programa. Nesta primeira parte, o sistema permite consultar times, consultar partidas e exibir a tabela de classificação.
+Sistema em linguagem C para gerenciamento de um campeonato computacional de futebol com 10 times. Os dados são persistidos em arquivos CSV e carregados em memória ao iniciar o programa.
 
 ---
 
 ## Estrutura do repositório
 
 ```
-trabalhop1/
+Trabalho-Estrutura-de-Dados/
 ├── main.c                  # Programa principal e menu do sistema
 ├── TAD_Time.h / .c         # TAD que representa um único time
 ├── TAD_BDTimes.h / .c      # TAD que gerencia a coleção de times
@@ -76,14 +76,14 @@ Exibe todos os 10 times em ordem de ID com suas estatísticas acumuladas (V, E, 
 
 ## Principais TADs
 
-### TAD Time (`TAD_Time.h / .c`)
-Representa um único time. Armazena `id`, `nome` e os contadores de desempenho (`v`, `e`, `d`, `gm`, `gs`). As funções `get_PG` e `get_SG` calculam os pontos ganhos e o saldo de gols sob demanda, garantindo que os valores derivados estejam sempre consistentes com os dados brutos.
+* TAD Time (`TAD_Time.h / .c`)
+Representa um único time. Armazena `id`, `nome` e os contadores de desempenho (`v`, `e`, `d`, `gm`, `gs`). As funções `get_PG` e `get_SG` calculam os pontos ganhos e o saldo de gols sob demanda.
 
-### TAD BDTimes (`TAD_BDTimes.h / .c`)
+* TAD BDTimes (`TAD_BDTimes.h / .c`)
 Gerencia o conjunto de todos os times. Responsável por carregar o `times.csv` (`readteams`), buscar um time pelo ID (`buscar_time_por_id`), atualizar as estatísticas de um time após uma partida (`registrar_resultado_Time`) e processar todas as partidas de uma vez para calcular o campeonato completo (`processar_campeonato`).
 
-### TAD Partida (`TAD_Partida.h / .c`)
+* TAD Partida (`TAD_Partida.h / .c`)
 Representa um único jogo, encapsulando `id`, `id_time1`, `id_time2`, `gols_time1` e `gols_time2`. Oferece funções de criação (`criar_partida`) e liberação de memória (`destruir_partida`).
 
-### TAD BDPartidas (`TAD_BDPartidas.h / .c`)
+* TAD BDPartidas (`TAD_BDPartidas.h / .c`)
 Gerencia a coleção de partidas usando um vetor dinâmico de ponteiros para `Partida`. É responsável por alocar a estrutura (`criar_BDPartidas`), carregar o CSV de partidas (`carregar_partidas_csv`) e liberar toda a memória ao final (`destruir_BDPartidas`).
