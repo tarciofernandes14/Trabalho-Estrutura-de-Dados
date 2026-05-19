@@ -87,22 +87,3 @@ Representa um único jogo, encapsulando `id`, `id_time1`, `id_time2`, `gols_time
 
 ### TAD BDPartidas (`TAD_BDPartidas.h / .c`)
 Gerencia a coleção de partidas usando um vetor dinâmico de ponteiros para `Partida`. É responsável por alocar a estrutura (`criar_BDPartidas`), carregar o CSV de partidas (`carregar_partidas_csv`) e liberar toda a memória ao final (`destruir_BDPartidas`).
-
----
-
-## Principais decisões de implementação
-
-**Vetor estático para times, vetor dinâmico para partidas**  
-Como o enunciado define exatamente 10 times, `BDTimes` usa um vetor estático de 11 posições. Já `BDPartidas` usa um vetor dinâmico de ponteiros, pois a quantidade de partidas varia conforme o cenário de teste.
-
-**Cálculo de PG e SG sob demanda**  
-Os campos `pg` e `sg` não são armazenados diretamente na struct `Time`. As funções `get_PG` e `get_SG` os calculam a partir de `v`, `e`, `gm` e `gs` no momento da consulta, evitando inconsistências caso os contadores base sejam atualizados.
-
-**Busca por prefixo com `strncmp`**  
-Tanto na consulta de times quanto na de partidas, a comparação é feita com `strncmp(nome, busca, strlen(busca))`, o que permite que o usuário informe apenas o início do nome e obtenha todos os resultados correspondentes.
-
-**Separação entre carregamento e processamento**  
-O carregamento do CSV de partidas (`carregar_partidas_csv`) é separado do cálculo das estatísticas (`processar_campeonato`). Isso deixa cada função com uma responsabilidade única e facilita a extensão para as próximas partes do trabalho, onde haverá inserção, atualização e remoção de partidas.
-
-**Liberação completa de memória**  
-Toda memória alocada dinamicamente é liberada ao encerrar o programa. Isso foi verificado com Valgrind (64 allocs, 64 frees, zero leaks).
