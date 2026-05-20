@@ -117,28 +117,14 @@ if (option == '1') {
             }
 
         } else if (option == '6') {
-            printf("\nImprimindo classificacao...\n");
+            imprimir_classificação(bd_time);
             
-            // Usando \t para criar colunas fixas pelo terminal
-            printf("ID\tTime\t\tV\tE\tD\tGM\tGS\tS\tPG\n");
-
-            for (int i = 0; i < bd_time->qtd_times; i++) {
-                Time *t = bd_time->lista_times[i];
-                
-                // Se o nome do time for muito curto (menor que 7 letras), 
-                // precisamos de dois \t para empurrar os números para a mesma coluna do "ESCorpiões"
-                if (strlen(t->nome) < 8) {
-                    printf("%d\t%s\t\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
-                           t->id, t->nome, t->v, t->e, t->d,
-                           t->gm, t->gs, get_SG(t), get_PG(t));
-                } else {
-                    printf("%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
-                           t->id, t->nome, t->v, t->e, t->d,
-                           t->gm, t->gs, get_SG(t), get_PG(t));
-                }
-            }
         }
+        printf("\nPressione ENTER para voltar ao menu...");
+        getchar(); 
+        getchar();
     }
+
 
     destruir_times(bd_time);
     destruir_BDPartidas(bd_partida);
