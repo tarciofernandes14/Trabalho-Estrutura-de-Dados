@@ -19,4 +19,6 @@ void processar_campeonato(BDTimes *bdt, BDPartidas *bdp);
 
 void destruir_times(BDTimes *bdt);
 
+void imprimir_classificação(BDTimes *bd_time);
+
 #endif
