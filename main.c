@@ -6,7 +6,14 @@
 #include "TAD_Time.h"
 #include "TAD_Partida.h"
 
-int main() {
+int main(int argc, char *argv[]) {
+
+    if (argc < 2) {
+        printf("Erro: Arquivo de partidas nao informado.\n");
+        printf("Uso correto: %s <nome_do_arquivo.csv>\n", argv[0]);
+        return 1; 
+    }
+
 
     BDTimes *bd_time = (BDTimes*) malloc(sizeof(BDTimes));
     if (bd_time == NULL) return 1;
@@ -25,7 +32,7 @@ int main() {
         return 1;
     }
 
-    carregar_partidas_csv(bd_partida, "partidas_parcial.csv");
+    carregar_partidas_csv(bd_partida, argv[1]);
     processar_campeonato(bd_time, bd_partida);
 
     char option = ' ';
