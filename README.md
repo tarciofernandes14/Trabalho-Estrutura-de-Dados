@@ -43,20 +43,22 @@ Trabalho-Estrutura-de-Dados/
 make
 ```
 
-**Executar:**
+**Executar: com partidas_vazio.csv**
 ```bash
-./sistema_futebol
+./sistema_futebol partidas_vazio.csv
+```
+**Executar: com partidas_parcial.csv**
+```bash
+./sistema_futebol partidas_parcial.csv
+```
+**Executar: com partidas_completo.csv**
+```bash
+./sistema_futebol partidas_completo.csv
 ```
 
 **Limpar arquivos de compilação:**
 ```bash
 make clean
-```
-
-**Trocar o cenário de partidas:**  
-Por padrão o sistema carrega `partidas_parcial.csv`. Para testar outro cenário, altere a linha correspondente em `main.c`:
-```c
-carregar_partidas_csv(bd_partida, "partidas_completo.csv");
 ```
 
 ---
