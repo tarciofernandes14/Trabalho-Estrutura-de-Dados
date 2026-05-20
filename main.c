@@ -120,7 +120,7 @@ if (option == '1') {
             imprimir_classificação(bd_time);
             
         }
-        printf("\nPressione ENTER para sair...");
+        printf("\nPressione ENTER para continuar...");
         getchar(); 
         getchar();
     }
